@@ -1,0 +1,39 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #167847;
+}
+
+.title {
+  width: 100%;
+  font-size: 1.2rem;
+  text-align: center;
+  color: #fff;
+  background: #000;
+  font-weight: bold;
+  padding: 1rem;
+}
+
+.btn {
+  color: #fff;
+  font-weight: bold;
+}
+
+.row {
+  margin: 0;
+}
+
+.carta {
+  position: relative;
+  width: 10rem;
+  left: 10rem;
+  margin-left: -5rem;
+}
+#jugador-cartas, 
+#computadora-cartas {
+  min-height: 15rem;
+}
