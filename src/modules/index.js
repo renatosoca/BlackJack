@@ -1,0 +1,9 @@
+export { clearHtml } from "./clearHtml";
+export { computerTurn } from "./computerTurn";
+export { accumulatePoints } from "./accumulatePoints";
+export { createDeck } from "./createDeck";
+export { newDeck } from "./newDeck";
+export { paintCard } from "./paintCard";
+export { requestCard } from "./requestDeck";
+export { showAlert } from "./showAlert";
+export { valueCard } from "./valueCard";
