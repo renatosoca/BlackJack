@@ -1,15 +1,11 @@
 (() => {
-  /* 
-    2C = Two of Clubs
-    2D = Two of Diamont
-    2H = Two of Hearts
-    2S = Two of Spades
-  */
-  const nuevoJuego = document.querySelector('#nuevo-juego');
-  const pedirCarta = document.querySelector('#pedir-carta');
-  const detenerJuego = document.querySelector('#detener');
-  const pointPlayer = document.querySelector('#judador-puntos');
-  const pointConputer = document.querySelector('#computadora-puntos');
+  'use strict'
+
+  const newGame = document.querySelector('#nuevo-juego');
+  const askForCard = document.querySelector('#pedir-carta');
+  const stopGame = document.querySelector('#detener');
+  const spanPlayerPoints = document.querySelector('#judador-puntos');
+  const spanComputerPoints = document.querySelector('#computadora-puntos');
   const divPlayerCards = document.querySelector('#jugador-cartas');
   const divComputerCards = document.querySelector('#computadora-cartas');
 
@@ -17,10 +13,28 @@
   const specials = ['A', 'J', 'Q', 'K'];
 
   let deck = [];
-  let pointsPlayer = 0;
-  let pointsComputer = 0;
+  let playersPoints = [];
+
+  const startGame = ( players = 2 ) => {
+    deck = createDeck();
+
+    playersPoints = [];
+    for (let i = 0; i < players; i++) {
+      playersPoints = [...playersPoints, 0];
+    }
+
+    askForCard.disabled = false;
+    stopGame.disabled = false;
+
+    spanPlayerPoints.textContent = 0;
+    spanComputerPoints.textContent = 0;
+
+    clearHtml( divComputerCards );
+    clearHtml( divPlayerCards );
+  }
 
   const createDeck = () => {
+    deck = [];
     for (let i = 2; i <=10; i++) {
       for (let type of types) {
         deck = [...deck, (i + type)];
@@ -32,57 +46,65 @@
         deck = [...deck, special + type ];
       }
     }
-    deck =  _.shuffle(deck);
-    return deck;
-  }
-  createDeck();
 
-  const requestDeckOfCard = () => {
+    return _.shuffle(deck);
+  }
+
+  const requestCard = () => {
     if ( !deck.length ) throw 'No hay cartas en la baraja';
     
-    const card = deck[ 0 ];
+    const card = deck[0];
     
     deck = deck.filter( element => element !== card );
     
     return card;
   }
 
-  const valueDeckOfCard = ( card ) => {
+  const valueCard = ( card ) => {
     const value = card.substring( 0, card.length -1);
 
     return ( !isNaN(value) ) ? +value : ( value === "A" ) ? 11 : 10;
   }
 
-  const paintHtml = ( request ) => {
-
+  const paintHtml = ( request, reference ) => {
     const img = document.createElement('img');
     img.classList.add('carta')
     img.src = `./assets/img/${request}.png`;
     img.alt = request;
 
-    return img;
+    reference.appendChild( img );
   }
 
-  const computerShift = ( minimunPoints ) => {
-    do {
-      const request = requestDeckOfCard();
-      pointsComputer += valueDeckOfCard( request );
-      pointConputer.textContent = pointsComputer
+  const showAlert = () => {
+    const [ minimunPoints, computerPoints ] = playersPoints;
+    setTimeout(() => {
+      if ( computerPoints === minimunPoints ) return alert('Nadie Gana');
+  
+      if ( minimunPoints > 21 || computerPoints <= 21 ) return alert('Gano la computadora');
+      
+      if ( computerPoints > 21 ) return alert(' Gano el Jugador ');
+    }, 50);
+  }
 
-      divComputerCards.appendChild( paintHtml( request ) );
+  const accumulatePoints = ( card, turn, player ) => {
+    playersPoints[ turn ] += valueCard( card );
+    player.textContent = playersPoints[ turn ];
+    return playersPoints[ turn ];
+  }
+
+  const computerTurn = ( minimunPoints ) => {
+    let computerPoints;
+    do {
+      const card = requestCard();
+      computerPoints = accumulatePoints( card, playersPoints.length - 1, spanComputerPoints );
+
+      paintHtml( card, divComputerCards );
 
       if ( minimunPoints > 21 ) break;
       
-    } while( ( pointsComputer < minimunPoints ) && ( minimunPoints <= 21 ) );
+    } while( ( computerPoints < minimunPoints ) && ( minimunPoints <= 21 ) );
 
-    setTimeout(() => {
-      if ( pointsComputer === minimunPoints ) return alert('Nadie Gana');
-  
-      if ( minimunPoints > 21 || pointsComputer <= 21 ) return alert('Gano la computadora');
-      
-      if ( pointsComputer > 21 ) return alert(' Gano el Jugador ');
-  
-    }, 50);
+    showAlert();
   }
 
   const clearHtml = ( element ) => {
@@ -92,47 +114,38 @@
   }
 
   //Eventos
-  pedirCarta.addEventListener('click', () => {
-    const request = requestDeckOfCard();
-    pointsPlayer += valueDeckOfCard( request );
-    pointPlayer.textContent = pointsPlayer;
-
-    divPlayerCards.appendChild( paintHtml( request ) );
-    if ( pointsPlayer > 21 ) {
-      pedirCarta.disabled = true;
-      detenerJuego.disabled = true;
-      computerShift( pointsPlayer );
+  askForCard.addEventListener('click', () => {
+    const card = requestCard();
+    const playerPoints = accumulatePoints( card, 0, spanPlayerPoints );
+    
+    paintHtml( card, divPlayerCards );
+    
+    if ( playerPoints > 21 ) {
+      askForCard.disabled = true;
+      stopGame.disabled = true;
+      computerTurn( playerPoints );
       return;
     }
-    if ( pointsPlayer === 21 ) {
-      pedirCarta.disabled = true;
-      detenerJuego.disabled = true;
-      computerShift( pointsPlayer );
-      return  
+    if ( playerPoints === 21 ) {
+      askForCard.disabled = true;
+      stopGame.disabled = true;
+      computerTurn( playerPoints );
+      return;
     }
   });
 
-  detenerJuego.addEventListener('click', () => {
-    pedirCarta.disabled = true;
-    detenerJuego.disabled = true;
+  stopGame.addEventListener('click', () => {
+    askForCard.disabled = true;
+    stopGame.disabled = true;
     
-    computerShift( pointsPlayer );
+    computerTurn( playersPoints[0] );
   });
 
-  nuevoJuego.addEventListener('click', () => {
-    deck = [];
-    createDeck();
-
-    pedirCarta.disabled = false;
-    detenerJuego.disabled = false;
-    
-    pointsPlayer = 0;
-    pointsComputer = 0;
-    pointPlayer.textContent = pointsPlayer
-    pointConputer.textContent = pointsComputer
-
-    clearHtml( divComputerCards );
-    clearHtml( divPlayerCards );
+  newGame.addEventListener('click', () => {
+    startGame();
   });
 
+  return {
+    newGame
+  }
 })();
