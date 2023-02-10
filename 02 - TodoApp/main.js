@@ -1,7 +1,7 @@
-import './style.css'
+import './style.css';
+import app from './src/todo/app';
+import todoStore from './src/store/todo';
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    Holaaa
-  </div>
-`
+todoStore.initStore();
+
+app('#app');
