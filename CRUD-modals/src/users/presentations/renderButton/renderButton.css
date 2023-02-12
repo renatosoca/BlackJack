@@ -1,0 +1,17 @@
+button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: .3rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: .1rem .3rem;
+  cursor: pointer;
+  border-radius: .8rem;
+}
+
+.buttonContainer {
+  margin-top: 1rem;
+}
