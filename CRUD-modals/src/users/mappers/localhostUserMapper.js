@@ -11,5 +11,5 @@ export const localhostUserToModel = ( localhostUser ) => {
     firstName: first_name,
     lastName: last_name,
     genter
-  } );
+  });
 }

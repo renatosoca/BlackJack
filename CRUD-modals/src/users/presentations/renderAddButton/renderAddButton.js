@@ -1,3 +1,4 @@
+import { showModal } from '../renderModal/renderModal';
 import './renderAddButton.css';
 
 export const renderAddButton = ( element ) => {
@@ -8,8 +9,7 @@ export const renderAddButton = ( element ) => {
   element.appendChild( addButton );
 
   //Event
-  addButton.addEventListener( "click", () => {
-    const modal = document.getElementById( "modal" );
-    modal.classList.remove( "hidden" );
-  })
+  addButton.addEventListener( "click", (e) => {
+    showModal();
+  });
 }

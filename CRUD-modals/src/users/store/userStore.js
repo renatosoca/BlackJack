@@ -23,10 +23,34 @@ const loadPreviousPage = async () => {
   state.users = users;
 }
 
-const onChangeUser = async ( user ) => {
+/**
+ * 
+ * @param {User} user 
+ */
+const onChangeUser = async ( userUpdated ) => {
+  let wasFound = false;
+
+  state.users = state.users.map( user => {
+    if ( user.id === userUpdated.id ) {
+      wasFound = true;
+      return userUpdated;
+    }
+    return user;
+  });
+
+  if ( state.users.length < 10 && !wasFound ) {
+    state.users.push( userUpdated );
+  }
 }
 
 const reloadPage = async () => {
+  const users = await loadUsersByPage( state.currentPages );
+  if ( users.length === 0 ){
+    await loadPreviousPage();
+    return
+  }
+
+  state.users = users;
 }
 
 export default {
